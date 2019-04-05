@@ -1,18 +1,19 @@
-import {Injectable} from '@angular/core';
-import {HTTP} from '@ionic-native/http';
-import {HttpClient, HttpClient as angularHttp, HttpHeaders, HttpRequest} from "@angular/common/http";
-import {checkAvailability} from '@ionic-native/core';
-import {Observable} from "rxjs/Observable";
-import "rxjs";
+import { Injectable } from '@angular/core';
+import { HTTP as nativeHttp } from '@ionic-native/http/ngx';
+import { HttpClient, HttpClient as angularHttp, HttpHeaders, HttpRequest } from "@angular/common/http";
+import { checkAvailability } from '@ionic-native/core';
+import { Observable } from "rxjs/Observable";
+import { map } from "rxjs/operators"
+import { from } from "rxjs"
 
 @Injectable()
 export class HttpWrapper {
   protected nativeIsAvailable: boolean | null = null;
 
-  public nativeHttp: HTTP;
+  public nativeHttp: nativeHttp;
   public angularHttp: HttpClient;
 
-  constructor(private native: HTTP, private angular: angularHttp) {
+  constructor(private native: nativeHttp, private angular: angularHttp) {
     this.nativeHttp = native;
     this.angularHttp = angular;
   }
@@ -26,72 +27,80 @@ export class HttpWrapper {
 
   public get(url: string, options?: HttpRequest<any>): Observable<any> {
     if (this.isNativeHttpAvailable()) {
-      return Observable.fromPromise(this.nativeHttp.get(url, this.parseParamsForNativeHttp(options), this.parseHeadersForNativeHttp(options))).map((res: any) => {
-        return {
-          json() {
-            return JSON.parse(res.data);
-          },
-          text(ignoredEncodingHint) {
-            return res.data.toString();
-          },
-          body: this.parseBodyFromNativeHttpResponse(res,options),
-          headers: new Headers(res.headers)
-        }
-      });
+      return from(this.nativeHttp.get(url, this.parseParamsForNativeHttp(options), this.parseHeadersForNativeHttp(options))).pipe(
+        map((res: any) => {
+          return {
+            json() {
+              return JSON.parse(res.data);
+            },
+            text(ignoredEncodingHint) {
+              return res.data.toString();
+            },
+            body: this.parseBodyFromNativeHttpResponse(res,options),
+            headers: new Headers(res.headers)
+          }
+        })
+      );
     }
     return this.angularHttp.get(url, this.parseOptionsForAngularHttp(options));
   }
 
   public post(url: string, body: any, options?: HttpRequest<any>): Observable<any> {
     if (this.isNativeHttpAvailable()) {
-      return Observable.fromPromise(this.nativeHttp.post(url, body, this.parseHeadersForNativeHttp(options))).map((res: any) => {
-        return {
-          json() {
-            return JSON.parse(res.data);
-          },
-          text(ignoredEncodingHint) {
-            return res.data.toString();
-          },
-          body: this.parseBodyFromNativeHttpResponse(res,options),
-          headers: new Headers(res.headers)
-        }
-      });
+      return from(this.nativeHttp.post(url, body, this.parseHeadersForNativeHttp(options))).pipe(
+        map((res: any) => {
+          return {
+            json() {
+              return JSON.parse(res.data);
+            },
+            text(ignoredEncodingHint) {
+              return res.data.toString();
+            },
+            body: this.parseBodyFromNativeHttpResponse(res,options),
+            headers: new Headers(res.headers)
+          }
+        })
+      );
     }
     return this.angularHttp.post(url, body, this.parseOptionsForAngularHttp(options));
   }
 
   public put(url: string, body: any, options?: HttpRequest<any>): Observable<any> {
     if (this.isNativeHttpAvailable()) {
-      return Observable.fromPromise(this.nativeHttp.put(url, body, this.parseHeadersForNativeHttp(options))).map((res: any) => {
-        return {
-          json() {
-            return JSON.parse(res.data);
-          },
-          text(ignoredEncodingHint) {
-            return res.data.toString();
-          },
-          body: this.parseBodyFromNativeHttpResponse(res,options),
-          headers: new Headers(res.headers)
-        }
-      });
+      return from(this.nativeHttp.put(url, body, this.parseHeadersForNativeHttp(options))).pipe(
+        map((res: any) => {
+          return {
+            json() {
+              return JSON.parse(res.data);
+            },
+            text(ignoredEncodingHint) {
+              return res.data.toString();
+            },
+            body: this.parseBodyFromNativeHttpResponse(res,options),
+            headers: new Headers(res.headers)
+          }
+        })
+      );
     }
     return this.angularHttp.put(url, body, this.parseOptionsForAngularHttp(options));
   }
 
   public delete(url: string, options?: HttpRequest<any>): Observable<any> {
     if (this.isNativeHttpAvailable()) {
-      return Observable.fromPromise(this.nativeHttp.delete(url, this.parseParamsForNativeHttp(options), this.parseHeadersForNativeHttp(options))).map((res: any) => {
-        return {
-          json() {
-            return JSON.parse(res.data);
-          },
-          text(ignoredEncodingHint) {
-            return res.data.toString();
-          },
-          body: this.parseBodyFromNativeHttpResponse(res,options),
-          headers: new Headers(res.headers)
-        }
-      });
+      return from(this.nativeHttp.delete(url, this.parseParamsForNativeHttp(options), this.parseHeadersForNativeHttp(options))).pipe(
+          map((res: any) => {
+          return {
+            json() {
+              return JSON.parse(res.data);
+            },
+            text(ignoredEncodingHint) {
+              return res.data.toString();
+            },
+            body: this.parseBodyFromNativeHttpResponse(res,options),
+            headers: new Headers(res.headers)
+          }
+        })
+      );
     }
     return this.angularHttp.delete(url, this.parseOptionsForAngularHttp(options));
   }
@@ -164,60 +173,68 @@ export class HttpWrapper {
           if (data == null) {
             data = options.params;
           }
-          return Observable.fromPromise(this.nativeHttp.get(url, data, headers)).map((res: any) => {
-            return {
-              json() {
-                return JSON.parse(res.data);
-              },
-              text(ignoredEncodingHint) {
-                return res.data.toString();
-              },
-              body: res.data,
-              headers: new Headers(res.headers)
-            }
-          });
+          return from(this.nativeHttp.get(url, data, headers)).pipe(
+            map((res: any) => {
+              return {
+                json() {
+                  return JSON.parse(res.data);
+                },
+                text(ignoredEncodingHint) {
+                  return res.data.toString();
+                },
+                body: res.data,
+                headers: new Headers(res.headers)
+              }
+            })
+          );
         case 'POST':
-          return Observable.fromPromise(this.nativeHttp.post(url, data, headers)).map((res: any) => {
-            return {
-              json() {
-                return JSON.parse(res.data);
-              },
-              text(ignoredEncodingHint) {
-                return res.data.toString();
-              },
-              body: res.data,
-              headers: new Headers(res.headers)
-            }
-          });
+          return from(this.nativeHttp.post(url, data, headers)).pipe(
+            map((res: any) => {
+              return {
+                json() {
+                  return JSON.parse(res.data);
+                },
+                text(ignoredEncodingHint) {
+                  return res.data.toString();
+                },
+                body: res.data,
+                headers: new Headers(res.headers)
+              }
+            })
+          );
         case 'PUT':
           if (data == null) {
             data = options.params != null ? options.params : {};
           }
-          return Observable.fromPromise(this.nativeHttp.put(url, data, headers)).map((res: any) => {
-            return {
-              json() {
-                return JSON.parse(res.data);
-              },
-              text(ignoredEncodingHint) {
-                return res.data.toString();
-              },
-              body: res.data,
-              headers: new Headers(res.headers)
-            }
-          });
+          return from(this.nativeHttp.put(url, data, headers)).pipe(
+            map((res: any) => {
+              return {
+                json() {
+                  return JSON.parse(res.data);
+                },
+                text(ignoredEncodingHint) {
+                  return res.data.toString();
+                },
+                body: res.data,
+                headers: new Headers(res.headers)
+              }
+            })
+          );
         case 'DELETE':
-          return Observable.fromPromise(this.nativeHttp.delete(url, data, headers)).map((res: any) => {
-            return {
-              json() {
-                return JSON.parse(res.data);
-              },
-              text(ignoredEncodingHint) {
-                return res.data.toString();
-              },
-              body: res.data,
-              headers: new Headers(res.headers)
-            }
-          });
+          return from(this.nativeHttp.delete(url, data, headers)).pipe(
+            map((res: any) => {
+              return {
+                json() {
+                  return JSON.parse(res.data);
+                },
+                text(ignoredEncodingHint) {
+                  return res.data.toString();
+                },
+                body: res.data,
+                headers: new Headers(res.headers)
+              }
+            })
+          );
         default:
           throw 'Request Method not found';
       }
