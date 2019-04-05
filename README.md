@@ -1,12 +1,12 @@
 # Ionic Native Http Angular Wrapper
 
-This is a basic package for wrapping the [@ionic-native/http plugin@^4.3.0]() with observables and providing a fallback to the [@angular/common/http](https://github.com/angular/angular/tree/5.0.5/packages/common/http) method.
+This is a basic package for wrapping the [@ionic-native/http@^5.3.0](https://www.npmjs.com/package/@ionic-native/http) with observables and providing a fallback to the [@angular/common/http](https://github.com/angular/angular/tree/5.0.5/packages/common/http) method.
 
 This will only handle basic requests, anything more advanced you should use the packages separately.
 
 This works with the WKWebView for iOS, and bypasses the CORS issues associated with @angular/common/http and WKWebView
 
-### Notes: 
+## Notes
 
 - PATCH method is not available
 - Local files will have to be handled manually, use `isNativeHttpAvailable()` to check if nativeHttp will be used
@@ -14,6 +14,7 @@ This works with the WKWebView for iOS, and bypasses the CORS issues associated w
 For older versions of Ionic where @angular<5.0 is used, please use version `1.0.0`.
 
 ## Add native http client to Ionic project & add module
+
 ````shell
 $ ionic cordova plugin add cordova-plugin-advanced-http
 $ npm install ionic-native-http-angular-wrapper --save
@@ -25,8 +26,8 @@ $ npm install ionic-native-http-angular-wrapper --save
 ```typescript
 
 // Import your module
-import {NativeHttpWrapper} from 'ionic-native-http-angular-wrapper';
- 
+import { NativeHttpWrapper } from 'ionic-native-http-angular-wrapper';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -34,8 +35,8 @@ import {NativeHttpWrapper} from 'ionic-native-http-angular-wrapper';
   ],
   imports: [
     IonicModule.forRoot(MyApp),
-   //Put here
-   NativeHttpWrapper
+    //Put here
+    NativeHttpWrapper
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -51,13 +52,13 @@ export class AppModule {}
 ## Using the module
 
 ````typescript
-import {HttpWrapper} from "ionic-native-http-angular-wrapper";
+import { HttpWrapper } from "ionic-native-http-angular-wrapper";
   
-constructor(private httpWrapper: HttpWrapper) {}
- 
+constructor( private httpWrapper: HttpWrapper ) {}
+
     public getStuff() {
-        this.httpWrapper.get('http://google.co.uk', {},{})
+        this.httpWrapper.get('https://example.com', {},{})
     }
-    
+
 }
 ````
